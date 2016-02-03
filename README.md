@@ -39,7 +39,30 @@ this is my personal homepage
  （2）Shark
          SHark是构建在Spark和Hive基础之上的数据仓库。目前已经完成学术使命，中止开发。
  （3） Spark SQL
-         Spark SQL提供在大数据上的SQL查询功能。Spqrk SQL使用Catalyst
+         Spark SQL提供在大数据上的SQL查询功能。Spqrk SQL使用Catalyst做查询编译和优化器。可以避免之前Shark一样依赖并需要维护一套Hive分支。
+ （4） Spark Streaming
+         Spark Streaming通过将流数据按照指定时间片累计为RDD，然后将每个RDD进行批量处理，进而实现大规模的流数据处理。
+ （5） GraphX
+         GraphX基于BSP模型，在Spark之上封装类似Pregel(一种大规模图计算模型)。在用户多轮次迭代时基于内存的Spark内存计算有显著优势。
+ （6） Tachyon
+         一种分布式内存文件系统，可以理解为内存中的HDFS。
+ （7） Mesos
+         一种资源管理框架，提供类似于YARN的功能。用户可以在其中插件式地运行Spark\MapReduce\Tez等计算框架的任务。Mesos会对资源和任务进行隔离，并且实现高效的资源任务调度。
+ （8） BlinkDB
+         一种用于在海量数据上进行交互式SQL的近似查询引擎。它允许用户通过在查询准确度和查询响应时间之间做出权衡，完成近似查询。其数据的精度被控制在允许的误差范围内（什么叫做允许的误差范围内？）为了达到这个目标，BlinkDB的核心思想是：通过一个自适应优化框架，随着时间的推移，从原始数据建立并维护一组多维样本；通过一个动态样本选择策略，选择一个适当大小的示例，然后基于查询的精确度和响应时间满足用户查询的需求。
+         
+ 1.3 Spark 架构
+ （1） Spark的代码结构
+ P7 图1-3
+ Scheduler模块代码量最多，6200行。deploy其次，5600行。外部的mllib7400,SQL12000
+ 
+ (2) Spark的架构
+ Spark的架构采用了分布式计算中的Master-Slave模式。Client：用户的客户端提交应用-》Driver:负责控制整个应用的执行-》ClusterManager负责任务的分配-》Worker:接收并负责状态汇报-》Executor:负责任务执行-》Task.
+ 
+ 主节点启动Master进程，从节点启动Worker进程。
+ 
+ spark的整体流程：Client提交应用-》Master找到一个Worker启动Driver-》Driver向Master或者资源管理器申请资源,之后将应用转化为RDD Graph->由DAGScheduler将RDD Graph转化为Stage
+ 
  
  
  
