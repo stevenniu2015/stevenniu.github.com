@@ -91,6 +91,33 @@ this is my personal homepage
  1.5 Spark的企业级应用----------------------------------------------------------------
  亚马逊---Yahoo!---西班牙电信---淘宝
  
+ 3. Spark计算模型
  
+
+3.1 Spark程序模型----------------------------------------------------------------------
+
+经典程序初步了解Spark的计算模型
+1）SparkContext中的textFile函数从HDFS读取日志文件，输出变量file。
+val file=sc.textFile("hdfs://xxx")
+2)RDD中的filter函数过滤带“ERROR”的行，输出errors(errors也是一个RDD）。
+val errors=file.filter(line=>line.contains("ERROR"))
+3)RDD的count函数返回“ERROR”的行数：errors.count()
+
+RDD操作起来与Scala集合类型没有太大差别，这就是Spark追求的目标：像编写单机程序一样编写分布式程序，但它们的数据和运行模式有很大的不同，用户需要具备更强的系统把控能力和分布式系统知识。
  
+ 3.2 弹性分布式数据集--------------------------------------------------------------------
+ 
+ 3.2.1 RDD简介
+ 弹性分布式数据集（resilient distributed dataset, RDD），它是逻辑集中的实体，在集群中的多台机器之间的数据重排（data shuffling）。Spark提供了“partitionBy”运算符，能够通过集群中多台机器之间对原始RDD进行数据再分配来形成一个新的RDD。RDD是Spark的核心数据结构，通过RDD的依赖关系形成Spark的调度顺序。通过对RDD的操作形成整个Spark程序。
+ 
+ （1）RDD的4中创建方式
+ 1）从hadoop文件系统（或者与Hadoop兼容的其他持久化存储系统，如Hive,Cassandra,Hbase）输出（如HDFS）创建。
+ 2）从父RDD转换得到新的RDD。
+ 3）调用SparkContext方法的parallelize，将Driver上的数据集并行化，转化为分布式的RDD。
+ 4）更改RDD的持久性（persistence）,例如cache()函数。默认RDD计算后会在内存清除。通过cache函数将计算后的RDD缓存在内存中（这什么方法，听不懂）。
+ 
+ （2）RDD的两种操作算子
+ transformation(转变)与Action（行动）。
+ 1.transformation: transformation操作是延迟计算的，也就是说从一个RDD转换生成另外一个RDD的转换操作不是马上执行的，需要等到有Action操作时候，才会真正出发运算。
+ 2.Action： Action算子会出发Spark提交作业（Job），并将数据输出到Spark系统。
  
